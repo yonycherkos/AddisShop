@@ -1,2 +1,2 @@
-# SparkShop
-SparkShop is a MERN stack ecommerce web app.
+# AddisShop
+AddisShop is a MERN stack ecommerce web app.
