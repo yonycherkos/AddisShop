@@ -1,19 +1,34 @@
-import React, { useEffect } from 'react';
-import { Link, useParams } from 'react-router-dom';
+import React, { useEffect, useState } from 'react';
+import { Link, useParams, useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
-import { Col, Row, Image, ListGroup, Button } from 'react-bootstrap';
+import {
+  Col,
+  Row,
+  Image,
+  ListGroup,
+  Button,
+  Form,
+  Card,
+} from 'react-bootstrap';
 import Rating from '../components/Rating';
 import { listProductDetails } from '../actions/productActions';
 import Loader from '../components/Loader';
 import Message from '../components/Message';
 
 const ProductScreen = () => {
-  var { id } = useParams();
+  const { id } = useParams();
+  let navigate = useNavigate();
+
+  const [qty, setQty] = useState(0);
 
   const dispatch = useDispatch();
 
   const productDetails = useSelector((state) => state.productDetails);
   const { loading, error, product } = productDetails;
+
+  const addToCartHandler = () => {
+    navigate(`/cart/${id}?qty=${qty}`);
+  };
 
   useEffect(() => {
     dispatch(listProductDetails(id));
@@ -31,12 +46,12 @@ const ProductScreen = () => {
       ) : (
         <Row>
           <Col md={6}>
-            <Image src={product.image} fluid />
+            <Image src={product.image} alt={product.name} fluid />
           </Col>
           <Col md={3}>
             <ListGroup variant='flush'>
               <ListGroup.Item>
-                <h1>{product.name}</h1>
+                <h3>{product.name}</h3>
               </ListGroup.Item>
               <ListGroup.Item>
                 <Rating
@@ -51,17 +66,59 @@ const ProductScreen = () => {
             </ListGroup>
           </Col>
           <Col md={3}>
-            <ListGroup>
-              <ListGroup.Item>Price: ${product.price}</ListGroup.Item>
-              <ListGroup.Item>
-                Status: {product.countInStock > 0 ? 'In Stock' : 'Out Of Stock'}
-              </ListGroup.Item>
-              <ListGroup.Item>
-                <Button variant='dark' disabled={product.countInStock === 0}>
-                  Add To Cart
-                </Button>
-              </ListGroup.Item>
-            </ListGroup>
+            <Card>
+              <ListGroup variant='flush'>
+                <ListGroup.Item>
+                  <Row>
+                    <Col>Price:</Col>
+                    <Col>
+                      <strong>${product.price}</strong>
+                    </Col>
+                  </Row>
+                </ListGroup.Item>
+
+                <ListGroup.Item>
+                  <Row>
+                    <Col>Status:</Col>
+                    <Col>
+                      {product.countInStock > 0 ? 'In Stock' : 'Out Of Stock'}
+                    </Col>
+                  </Row>
+                </ListGroup.Item>
+
+                {product.countInStock > 0 && (
+                  <ListGroup.Item>
+                    <Row>
+                      <Col>Qty</Col>
+                      <Col>
+                        <Form.Control
+                          as='select'
+                          value={qty}
+                          onChange={(e) => setQty(e.target.value)}
+                        >
+                          {[...Array(product.countInStock).keys()].map((x) => (
+                            <option key={x + 1} value={x + 1}>
+                              {x + 1}
+                            </option>
+                          ))}
+                        </Form.Control>
+                      </Col>
+                    </Row>
+                  </ListGroup.Item>
+                )}
+
+                <ListGroup.Item>
+                  <Button
+                    onClick={addToCartHandler}
+                    className='btn-block'
+                    type='button'
+                    disabled={product.countInStock === 0}
+                  >
+                    Add To Cart
+                  </Button>
+                </ListGroup.Item>
+              </ListGroup>
+            </Card>
           </Col>
         </Row>
       )}
