@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { Form, Button, Row, Col } from 'react-bootstrap';
-import { getUserDetails } from '../actions/userActions';
+import { getUserDetails, updateUserProfile } from '../actions/userActions';
 import Message from '../components/Message';
 import Loader from '../components/Loader';
 
@@ -16,7 +16,10 @@ const ProfileScreen = () => {
   const dispatch = useDispatch();
 
   const userDetails = useSelector((state) => state.userDetails);
-  const { loading, error, user } = userDetails;
+  let { loading, error, user } = userDetails;
+
+  const userUpdateProfile = useSelector((state) => state.userUpdateProfile);
+  let { success } = userUpdateProfile;
 
   const userLogin = useSelector((state) => state.userLogin);
   const { userInfo } = userLogin;
@@ -26,32 +29,23 @@ const ProfileScreen = () => {
   useEffect(() => {
     if (!userInfo) {
       navigate('/');
-    } else if (!user) {
-      dispatch(getUserDetails());
     } else {
-      setName(user.name);
-      setEmail(user.email);
+      if (!user || success) {
+        dispatch(getUserDetails('profile'));
+      } else {
+        setName(user.name);
+        setEmail(user.email);
+      }
     }
-  }, [dispatch, navigate, user, userInfo]);
+  }, [dispatch, navigate, success, user, userInfo]);
 
   const submitHandler = (e) => {
     e.preventDefault();
-    // DISPATCH UPDATE USER DETAILS
-  };
-
-  const validateForm = () => {
-    let error = null;
-    if (name === '') {
-      error = 'Name is required';
-    } else if (email === '') {
-      error = 'Email is required';
-    } else if (password === '') {
-      error = 'Password is required';
-    } else if (password !== confirmPassword) {
-      error = "Password doesn't match";
+    if (password !== confirmPassword) {
+      setMessage('Password do not match');
+    } else {
+      dispatch(updateUserProfile({ id: user._id, name, email, password }));
     }
-    setMessage(error);
-    return error === null;
   };
 
   return (
@@ -60,6 +54,7 @@ const ProfileScreen = () => {
         <h2>Profile Details</h2>
 
         {message && <Message variant='danger'>{message}</Message>}
+        {success && <Message variant='success'>Profile updated</Message>}
         {error && <Message variant='danger'>{error}</Message>}
         {loading && <Loader />}
 
