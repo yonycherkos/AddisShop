@@ -117,7 +117,7 @@ const ProfileScreen = () => {
         ) : errorOrders ? (
           <Message variant='danger'>{error}</Message>
         ) : (
-          <Table striped bordered hover size='sm'>
+          <Table striped bordered hover responsive size='sm'>
             <thead>
               <tr>
                 <th>ID</th>
@@ -138,14 +138,14 @@ const ProfileScreen = () => {
                     {order.isPaid ? (
                       order.paidAt.substring(0, 10)
                     ) : (
-                      <i className='fa fa-close' style={{ color: 'red' }}></i>
+                      <i className='fa fa-times' style={{ color: 'red' }}></i>
                     )}
                   </td>
                   <td>
                     {order.isDelivered ? (
                       order.deliveredAt.substring(0, 10)
                     ) : (
-                      <i className='fa fa-close' style={{ color: 'red' }}></i>
+                      <i className='fa fa-times' style={{ color: 'red' }}></i>
                     )}
                   </td>
                   <td>
