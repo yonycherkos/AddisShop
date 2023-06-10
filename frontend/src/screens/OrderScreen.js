@@ -23,7 +23,7 @@ const OrderScreen = () => {
   const dispatch = useDispatch();
 
   useEffect(() => {
-    if (!order || successPay) {
+    if (!order || successPay || order._id !== orderId) {
       dispatch({ type: ORDER_PAY_RESET });
       dispatch(getOrderDetails(orderId));
     } else if (!order.isPaid) {
