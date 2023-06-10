@@ -8,6 +8,6 @@ import {
 const router = express.Router();
 
 router.post('/', protect, addOrderItems);
-router.get('/', protect, getOrderById);
+router.get('/:id', protect, getOrderById);
 
 export default router;
