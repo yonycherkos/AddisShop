@@ -5,7 +5,7 @@ import { Button, Col, Row, Table } from 'react-bootstrap';
 import Loader from '../components/Loader';
 import Message from '../components/Message';
 import { LinkContainer } from 'react-router-bootstrap';
-import { getProducts } from '../actions/productActions';
+import { getProducts, deleteProduct } from '../actions/productActions';
 
 const ProductListScreen = () => {
   const dispatch = useDispatch();
@@ -19,7 +19,11 @@ const ProductListScreen = () => {
   const { userInfo } = userLogin;
 
   const userDelete = useSelector((state) => state.userDelete);
-  const { success: successDelete } = userDelete;
+  const {
+    loading: loadingDelete,
+    error: errorDelete,
+    success: successDelete,
+  } = userDelete;
 
   useEffect(() => {
     if (userInfo && userInfo.isAdmin) {
@@ -31,7 +35,7 @@ const ProductListScreen = () => {
 
   const deleteHandler = (id) => {
     if (window.confirm('Are you sure')) {
-      // DELETE PRODUCT
+      dispatch(deleteProduct(id));
     }
   };
 
@@ -51,6 +55,8 @@ const ProductListScreen = () => {
           </Button>
         </Col>
       </Row>
+      {loadingDelete && <Loader />}
+      {errorDelete && <Message variant='danger'>{errorDelete}</Message>}
       {loading ? (
         <Loader />
       ) : error ? (
@@ -69,30 +75,31 @@ const ProductListScreen = () => {
             </tr>
           </thead>
           <tbody>
-            {products.map((product, index) => (
-              <tr key={product._id}>
-                <td>{index + 1}</td>
-                <td>{product._id}</td>
-                <td>{product.name}</td>
-                <td>${product.price}</td>
-                <td>{product.category}</td>
-                <td>{product.brand}</td>
-                <td>
-                  <LinkContainer to={`/admin/product/${product._id}/edit`}>
-                    <Button variant='light' className='btn-sm'>
-                      <i className='fas fa-edit'></i>
+            {products &&
+              products.map((product, index) => (
+                <tr key={product._id}>
+                  <td>{index + 1}</td>
+                  <td>{product._id}</td>
+                  <td>{product.name}</td>
+                  <td>${product.price}</td>
+                  <td>{product.category}</td>
+                  <td>{product.brand}</td>
+                  <td>
+                    <LinkContainer to={`/admin/product/${product._id}/edit`}>
+                      <Button variant='light' className='btn-sm'>
+                        <i className='fas fa-edit'></i>
+                      </Button>
+                    </LinkContainer>
+                    <Button
+                      variant='danger'
+                      className='btn-sm'
+                      onClick={() => deleteHandler(product._id)}
+                    >
+                      <i className='fas fa-trash'></i>
                     </Button>
-                  </LinkContainer>
-                  <Button
-                    variant='danger'
-                    className='btn-sm'
-                    onClick={() => deleteHandler(product._id)}
-                  >
-                    <i className='fas fa-trash'></i>
-                  </Button>
-                </td>
-              </tr>
-            ))}
+                  </td>
+                </tr>
+              ))}
           </tbody>
         </Table>
       )}
