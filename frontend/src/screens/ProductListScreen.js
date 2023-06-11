@@ -18,12 +18,12 @@ const ProductListScreen = () => {
   const userLogin = useSelector((state) => state.userLogin);
   const { userInfo } = userLogin;
 
-  const userDelete = useSelector((state) => state.userDelete);
+  const productDelete = useSelector((state) => state.productDelete);
   const {
     loading: loadingDelete,
     error: errorDelete,
     success: successDelete,
-  } = userDelete;
+  } = productDelete;
 
   useEffect(() => {
     if (userInfo && userInfo.isAdmin) {

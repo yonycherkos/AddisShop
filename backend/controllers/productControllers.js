@@ -36,3 +36,28 @@ export const deleteProduct = asyncHandler(async (req, res) => {
     throw new Error('Product not found');
   }
 });
+
+// @desc   Create product
+// @route  POST /api/products/:id
+// @access Private/Admin
+export const createProduct = asyncHandler(async (req, res) => {
+  const { name, image, description, brand, category, price, countInStock } =
+    req.body;
+
+  const product = new Product({
+    name,
+    image,
+    description,
+    brand,
+    category,
+    price,
+    countInStock,
+    rating: 0,
+    numReviews: 0,
+    reviews: [],
+    user: req.user._id,
+  });
+  const createdProduct = await product.save();
+
+  res.json(createdProduct);
+});
