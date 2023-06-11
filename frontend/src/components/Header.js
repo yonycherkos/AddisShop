@@ -1,5 +1,6 @@
 import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
 import { Container, Navbar, Nav, NavDropdown } from 'react-bootstrap';
 import { LinkContainer } from 'react-router-bootstrap';
 import { logout } from '../actions/userActions';
@@ -10,8 +11,11 @@ const Header = () => {
 
   const dispatch = useDispatch();
 
+  const navigate = useNavigate();
+
   const logoutHandler = () => {
     dispatch(logout());
+    navigate('/');
   };
 
   return (
