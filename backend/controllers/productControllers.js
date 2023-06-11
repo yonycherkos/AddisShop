@@ -61,3 +61,29 @@ export const createProduct = asyncHandler(async (req, res) => {
 
   res.json(createdProduct);
 });
+
+// @desc Update product
+// @route PUT /api/products/:id
+// @access Public/Admin
+export const updateProduct = asyncHandler(async (req, res) => {
+  const { name, image, description, brand, category, price, countInStock } =
+    req.body;
+
+  const product = await Product.findById(req.params.id);
+  if (product) {
+    product.name = name || product.name;
+    product.image = image || product.image;
+    product.description = description || product.description;
+    product.brand = brand || product.brand;
+    product.category = category || product.category;
+    product.price = price || product.price;
+    product.countInStock = countInStock || product.countInStock;
+
+    const updatedProduct = await product.save();
+
+    res.json(updatedProduct);
+  } else {
+    res.status(404);
+    throw new Error('Product not found');
+  }
+});

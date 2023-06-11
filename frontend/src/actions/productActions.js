@@ -12,6 +12,9 @@ import {
   PRODUCT_CREATE_REQUEST,
   PRODUCT_CREATE_SUCCESS,
   PRODUCT_CREATE_FAIL,
+  PRODUCT_UPDATE_REQUEST,
+  PRODUCT_UPDATE_SUCCESS,
+  PRODUCT_UPDATE_FAIL,
 } from '../constants/productConstants';
 
 export const getProducts = () => async (dispatch) => {
@@ -56,7 +59,7 @@ export const getProductDetails = (id) => async (dispatch) => {
   }
 };
 
-export const deleteProduct = (id) => async (dispatch, getState) => {
+export const deleteProduct = (productId) => async (dispatch, getState) => {
   try {
     dispatch({ type: PRODUCT_DELETE_REQUEST });
 
@@ -68,7 +71,7 @@ export const deleteProduct = (id) => async (dispatch, getState) => {
       },
     };
 
-    await axios.delete(`/api/products/${id}`, config);
+    await axios.delete(`/api/products/${productId}`, config);
 
     dispatch({ type: PRODUCT_DELETE_SUCCESS });
   } catch (error) {
@@ -95,7 +98,7 @@ export const createProduct = (product) => async (dispatch, getState) => {
       },
     };
 
-    await axios.post(`/api/products`, product, config);
+    await axios.post('/api/products', product, config);
 
     dispatch({ type: PRODUCT_CREATE_SUCCESS });
   } catch (error) {
@@ -108,3 +111,31 @@ export const createProduct = (product) => async (dispatch, getState) => {
     });
   }
 };
+
+export const updateProduct =
+  (productId, product) => async (dispatch, getState) => {
+    try {
+      dispatch({ type: PRODUCT_UPDATE_REQUEST });
+
+      const { userInfo } = getState().userLogin;
+
+      const config = {
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${userInfo.token}`,
+        },
+      };
+
+      await axios.put(`/api/products/${productId}`, product, config);
+
+      dispatch({ type: PRODUCT_UPDATE_SUCCESS });
+    } catch (error) {
+      dispatch({
+        type: PRODUCT_UPDATE_FAIL,
+        payload:
+          error.response && error.response.data.message
+            ? error.response.data.message
+            : error.message,
+      });
+    }
+  };

@@ -10,7 +10,7 @@ import Loader from '../components/Loader';
 
 const ProductCreateScreen = () => {
   const [name, setName] = useState('');
-  const [image, setImage] = useState('/images/sample.jpg');
+  const [image, setImage] = useState('');
   const [description, setDescription] = useState('');
   const [brand, setBrand] = useState('');
   const [category, setCategory] = useState('');
@@ -65,6 +65,17 @@ const ProductCreateScreen = () => {
               value={name}
               required
               onChange={(e) => setName(e.target.value)}
+            />
+          </Form.Group>
+
+          <Form.Group className='mb-3' controlId='image'>
+            <Form.Label>Image Url</Form.Label>
+            <Form.Control
+              type='text'
+              placeholder='Enter image url'
+              value={image}
+              required
+              onChange={(e) => setImage(e.target.value)}
             />
           </Form.Group>
 
