@@ -1,3 +1,4 @@
+import axios from 'axios';
 import React, { useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { useNavigate, Link } from 'react-router-dom';
@@ -9,6 +10,10 @@ import Message from '../components/Message';
 import Loader from '../components/Loader';
 
 const ProductCreateScreen = () => {
+  const dispatch = useDispatch();
+
+  const navigate = useNavigate();
+
   const [name, setName] = useState('');
   const [image, setImage] = useState('');
   const [description, setDescription] = useState('');
@@ -16,13 +21,10 @@ const ProductCreateScreen = () => {
   const [category, setCategory] = useState('');
   const [price, setPrice] = useState(0);
   const [countInStock, setCountInStock] = useState(0);
-
-  const dispatch = useDispatch();
+  const [uploading, setUploading] = useState(false);
 
   const productCreate = useSelector((state) => state.productCreate);
   const { loading, error, success } = productCreate;
-
-  const navigate = useNavigate();
 
   useEffect(() => {
     if (success) {
@@ -30,6 +32,30 @@ const ProductCreateScreen = () => {
       dispatch({ type: PRODUCT_CREATE_RESET });
     }
   }, [dispatch, navigate, success]);
+
+  const uploadImageHandler = (e) => {
+    const file = e.target.files[0];
+    const formData = new FormData();
+    formData.append('image', file);
+    uploadImage(formData);
+  };
+
+  const uploadImage = async (formData) => {
+    try {
+      setUploading(true);
+      const config = {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      };
+
+      const { data } = await axios.post('/api/uploa', formData, config);
+      setImage(data);
+      setUploading(false);
+    } catch (error) {
+      setUploading(false);
+    }
+  };
 
   const submitHandler = (e) => {
     e.preventDefault();
@@ -77,6 +103,12 @@ const ProductCreateScreen = () => {
               required
               onChange={(e) => setImage(e.target.value)}
             />
+            <Form.Control
+              type='file'
+              placeholder='Choose image file'
+              onChange={uploadImageHandler}
+            ></Form.Control>
+            {uploading && <Loader />}
           </Form.Group>
 
           <Form.Group className='mb-3' controlId='description'>
