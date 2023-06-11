@@ -39,10 +39,6 @@ const ProductListScreen = () => {
     }
   };
 
-  const createProductHandler = () => {
-    // CREATE PRODUCT
-  };
-
   return (
     <div>
       <Row className='align-items-center'>
@@ -50,7 +46,10 @@ const ProductListScreen = () => {
           <h1>Products</h1>
         </Col>
         <Col md={2} sm={4}>
-          <Button className='my-3' onClick={createProductHandler}>
+          <Button
+            className='my-3'
+            onClick={() => navigate('/admin/products/create')}
+          >
             <i className='fas fa-plus'></i> Create Product
           </Button>
         </Col>
