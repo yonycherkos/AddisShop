@@ -1,23 +1,24 @@
 import React, { useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { Row, Col } from 'react-bootstrap';
+import { Row, Col, Container } from 'react-bootstrap';
 import { useParams } from 'react-router-dom';
 import Product from '../components/Product';
 import { getProducts } from '../actions/productActions';
 import Loader from '../components/Loader';
 import Message from '../components/Message';
+import Paginate from '../components/Paginate';
 
 const HomeScreen = () => {
   const dispatch = useDispatch();
 
-  const { keyword } = useParams();
+  const { keyword, pageNumber } = useParams('');
 
   const productList = useSelector((state) => state.productList);
-  const { loading, error, products } = productList;
+  const { loading, error, products, page, pages } = productList;
 
   useEffect(() => {
-    dispatch(getProducts(keyword));
-  }, [dispatch, keyword]);
+    dispatch(getProducts(keyword, pageNumber));
+  }, [dispatch, keyword, pageNumber]);
 
   return (
     <div>
@@ -27,15 +28,22 @@ const HomeScreen = () => {
       ) : error ? (
         <Message variant='danger'>{error}</Message>
       ) : (
-        <Row>
-          {products.map((product, index) => {
-            return (
-              <Col key={index} sm={12} md={9} lg={6} xl={3} className='py-3'>
-                <Product product={product} />
-              </Col>
-            );
-          })}
-        </Row>
+        <Container>
+          <Row>
+            {products.map((product, index) => {
+              return (
+                <Col key={index} sm={12} md={9} lg={6} xl={3} className='py-3'>
+                  <Product product={product} />
+                </Col>
+              );
+            })}
+          </Row>
+          <Paginate
+            pages={pages}
+            page={page}
+            keyword={keyword ? keyword : ''}
+          />
+        </Container>
       )}
     </div>
   );
